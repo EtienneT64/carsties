@@ -1,0 +1,28 @@
+@SearchService_HostAddress = http://localhost:7001
+
+### Get all Auctions
+GET {{SearchService_HostAddress}}/api/auctions/
+Accept: application/json
+
+
+### Create a New Auction
+POST {{SearchService_HostAddress}}/api/auctions
+Content-Type: application/json
+
+{
+  "reservePrice": 50000,
+  "seller": "tom",
+  "winner": null,
+  "soldAmount": 0,
+  "currentHighBid": 0,
+  "createdAt": "2025-01-13T18:56:54.428382Z",
+  "updatedAt": "2025-01-13T18:56:54.428382Z",
+  "auctionEnd": "2025-01-03T18:56:54.428382Z",
+  "status": "ReserveNotMet",
+  "make": "Mercedes",
+  "model": "SLK",
+  "year": 2020,
+  "color": "Silver",
+  "mileage": 15001,
+  "imageUrl": "https://cdn.pixabay.com/photo/2016/04/17/22/10/mercedes-benz-1335674_960_720.png"
+}
