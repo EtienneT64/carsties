@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Duende.IdentityModel;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Authorization;
