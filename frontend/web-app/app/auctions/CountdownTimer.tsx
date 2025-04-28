@@ -35,7 +35,10 @@ const renderer = ({
       {completed ? (
         <span>Auction finished</span>
       ) : (
-        <span suppressHydrationWarning={true}>
+        <span
+          className="font-mono"
+          suppressHydrationWarning={true}
+        >
           {zeroPad(days)}:{zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
         </span>
       )}
@@ -46,7 +49,10 @@ const renderer = ({
 export default function CountdownTimer({ auctionEnd }: Props) {
   return (
     <div>
-      <Countdown date={auctionEnd} renderer={renderer} />
+      <Countdown
+        date={auctionEnd}
+        renderer={renderer}
+      />
     </div>
   );
 }
