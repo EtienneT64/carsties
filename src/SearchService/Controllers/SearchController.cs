@@ -53,13 +53,14 @@ namespace SearchService.Controllers
             query.PageSize(searchParams.PageSize);
 
             var result = await query.ExecuteAsync();
-
-            return Ok(new
+            var response = new
             {
                 results = result.Results,
                 pageCount = result.PageCount,
                 totalCount = result.TotalCount
-            });
+            };
+
+            return Ok(response);
         }
     }
 }
