@@ -20,8 +20,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
   auction-svc:
     image: etiennet64/auction-svc:latest
     build:
@@ -99,4 +99,17 @@ services:
       - 7003:80
     depends_on:
       - mongodb
+      - rabbitmq
+  notify-svc:
+    image: etiennet64/notify-svc:latest
+    build:
+      context: .
+      dockerfile: src/NotificationService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+    ports:
+      - 7004:80
+    depends_on:
       - rabbitmq
