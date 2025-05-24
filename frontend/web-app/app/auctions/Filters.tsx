@@ -51,7 +51,7 @@ export default function Filters() {
     <div className="flex justify-between items-center mb-4">
       <div>
         <span className="uppercase text-sm text-gray-500 mr-2">Filter by</span>
-        <ButtonGroup>
+        <ButtonGroup outline>
           {filterButtons.map(({ label, icon: Icon, value }) => (
             <Button
               color={`${filterBy == value ? 'red' : 'gray'}`}
@@ -66,7 +66,7 @@ export default function Filters() {
       </div>
       <div>
         <span className="uppercase text-sm text-gray-500 mr-2">Order by</span>
-        <ButtonGroup>
+        <ButtonGroup outline>
           {orderButtons.map(({ label, icon: Icon, value }) => (
             <Button
               color={`${orderBy == value ? 'red' : 'gray'}`}
@@ -81,7 +81,7 @@ export default function Filters() {
       </div>
       <div>
         <span className="uppercase text-sm text-gray-500 mr-2">Page size</span>
-        <ButtonGroup>
+        <ButtonGroup outline>
           {pageSizeButtons.map((value, i) => (
             <Button
               key={i}

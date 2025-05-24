@@ -1,27 +1,45 @@
 services:
   postgres:
-    image: postgres
+    image: postgres:latest
     environment:
-      - POSTGRES_PASSWORD=postgrespw
+      POSTGRES_PASSWORD: postgrespw
     ports:
-      - 5432:5432
+      - '5432:5432'
     volumes:
-      - /var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
   mongodb:
-    image: mongo
+    image: mongo:latest
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=mongopw
     ports:
-      - 27017:27017
+      - '27017:27017'
     volumes:
-      - /data/db
+      - mongodata:/data/db
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongosh',
+          '--quiet',
+          '127.0.0.1/test',
+          '--eval',
+          "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
+    image: rabbitmq:4-management-alpine
     ports:
-      - '5672:5672'
       - '15672:15672'
+      - '5672:5672'
   auction-svc:
     image: etiennet64/auction-svc:latest
     build:
@@ -32,7 +50,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_URLS=http://+:7777
       - RabbitMQ__Host=rabbitmq
-      - ConnectionStrings__DefaultConnection=Server=postgres;User Id=postgres;Password=postgrespw;Database=auctions
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Username=postgres;Password=postgrespw;Database=auctions
       - IdentityServiceUrl=http://identity-svc
       - Kestrel__Endpoints__Grpc__Protocols=Http2
       - Kestrel__Endpoints__Grpc__Url=http://+:7777
@@ -42,8 +60,10 @@ services:
       - 7001:80
       - 7777:7777
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
   search-svc:
     image: etiennet64/search-svc:latest
     build:
@@ -58,8 +78,10 @@ services:
     ports:
       - 7002:80
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
   identity-svc:
     image: etiennet64/identity-svc:latest
     build:
@@ -68,11 +90,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=postgres; User Id=postgres; Password=postgrespw; Database=identity
-    ports:
-      - 5001:80
+      - IssuerUri=https://id.carsties.local
+      - ClientApp=https://app.carsties.local
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Username=postgres;Password=postgrespw;Database=identity
+      - VIRTUAL_HOST=id.carsties.local
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
   gateway-svc:
     image: etiennet64/gateway-svc:latest
     build:
@@ -81,8 +105,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
-    ports:
-      - 6001:80
+      - ClientApp=https://app.carsties.local
+      - VIRTUAL_HOST=api.carsties.local
   bid-svc:
     image: etiennet64/bid-svc:latest
     build:
@@ -91,15 +115,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - RabbitMq__Host=rabbitmq
+      - RabbitMQ__Host=rabbitmq
       - ConnectionStrings__BidDbConnection=mongodb://root:mongopw@mongodb
       - IdentityServiceUrl=http://identity-svc
       - GrpcAuction=http://auction-svc:7777
     ports:
       - 7003:80
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
   notify-svc:
     image: etiennet64/notify-svc:latest
     build:
@@ -113,3 +139,31 @@ services:
       - 7004:80
     depends_on:
       - rabbitmq
+  web-app:
+    image: etiennet64/web-app:latest
+    build:
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+    volumes:
+      - /var/lib/web/data
+    environment:
+      - AUTH_SECRET="3tBxH2RoG0jA0idF5agOV3Cec7aC1Hn6y54+DDBjkgU="
+      - API_URL=http://gateway-svc/
+      - ID_URL=https://id.carsties.local
+      - ID_URL_INTERNAL=http://identity-svc
+      - AUTH_URL=https://app.carsties.local
+      - AUTH_URL_INTERNAL=http://web-app:3000
+      - VIRTUAL_HOST=app.carsties.local
+      - VIRTUAL_PORT=3000
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./devcerts:/etc/nginx/certs
+volumes:
+  pgdata:
+  mongodata:

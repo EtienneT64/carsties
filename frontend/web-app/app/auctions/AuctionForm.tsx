@@ -145,8 +145,8 @@ export default function AuctionForm({ auction }: Props) {
           {isSubmitting && (
             <Spinner
               size="sm"
+              className="mr-3"
               aria-label="Loading"
-              className="me-3"
             />
           )}
           Submit

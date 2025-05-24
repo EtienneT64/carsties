@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Button, Spinner } from 'flowbite-react';
@@ -27,7 +28,7 @@ export default function AuthTest() {
           <Spinner
             size="sm"
             aria-label="Loading"
-            className="me-3"
+            className="mr-3"
           />
         )}
         Test Auth

@@ -1,7 +1,4 @@
-import {
-  getBidsForAuction,
-  getDetailedViewData,
-} from '@/app/actions/auctionActions';
+import { getDetailedViewData } from '@/app/actions/auctionActions';
 import { getCurrentUser } from '@/app/actions/authActions';
 import Heading from '@/app/components/Heading';
 import CarImage from '../../CarImage';
@@ -19,7 +16,6 @@ export default async function Details({
   const { id } = await params;
   const data = await getDetailedViewData(id);
   const user = await getCurrentUser();
-  const bids = await getBidsForAuction(id);
 
   return (
     <div>

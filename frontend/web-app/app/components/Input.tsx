@@ -1,4 +1,4 @@
-import { Label, TextInput } from 'flowbite-react';
+import { HelperText, Label, TextInput } from 'flowbite-react';
 import { useController, UseControllerProps } from 'react-hook-form';
 
 interface Props extends UseControllerProps {
@@ -13,7 +13,10 @@ export default function Input(props: Props) {
     <div className="mb-3">
       {props.showLabel && (
         <div className="mb-2 block">
-          <Label htmlFor={field.name}>{props.label}</Label>
+          <Label
+            htmlFor={field.name}
+            title={props.label}
+          />
         </div>
       )}
       <TextInput
@@ -25,9 +28,7 @@ export default function Input(props: Props) {
           fieldState.error ? 'failure' : !fieldState.isDirty ? '' : 'success'
         }
       />
-      {fieldState.error && (
-        <div className="text-red-500 text-sm">{fieldState.error.message}</div>
-      )}
+      <HelperText color="failure">{fieldState.error?.message}</HelperText>
     </div>
   );
 }

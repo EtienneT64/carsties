@@ -16,7 +16,10 @@ export default function DateInput(props: Props) {
     <div className="mb-3">
       {props.showLabel && (
         <div className="mb-2 block">
-          <Label htmlFor={field.name}>{props.label}</Label>
+          <Label
+            htmlFor={field.name}
+            title={props.label}
+          />
         </div>
       )}
 
@@ -26,17 +29,15 @@ export default function DateInput(props: Props) {
         placeholderText={props.label}
         selected={field.value}
         className={`
-          block
-          w-full
           rounded-lg
+          w-[100%]
           border
-          p-2.5
-          text-sm
-          focus:border-cyan-500
-          focus:ring-cyan-500
+          border-gray-600
+          p-2
+          flex flex-col
           ${
             fieldState.error
-              ? 'bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
+              ? 'bg-red-50 border-red-500 text-red-900'
               : !fieldState.invalid && fieldState.isDirty
               ? 'bg-green-50 border-green-500 text-green-900'
               : ''
