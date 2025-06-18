@@ -13,6 +13,18 @@ jobs:
         service:
           - name: "etiennet64/auction-svc"
             path: "src/AuctionService"
+          - name: "etiennet64/search-svc"
+            path: "src/SearchService"
+          - name: "etiennet64/bid-svc"
+            path: "src/BidService"
+          - name: "etiennet64/identity-svc"
+            path: "src/IdentityService"
+          - name: "etiennet64/gateway-svc"
+            path: "src/GatewayService"
+          - name: "etiennet64/notify-svc"
+            path: "src/NotificationService"
+          - name: "etiennet64/web-app"
+            path: "frontend/web-app"
 
     steps:
       - name: Checkout code
