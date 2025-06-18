@@ -16,7 +16,7 @@ jobs:
           - name: "etiennet64/search-svc"
             path: "src/SearchService"
           - name: "etiennet64/bid-svc"
-            path: "src/BidService"
+            path: "src/BiddingService"
           - name: "etiennet64/identity-svc"
             path: "src/IdentityService"
           - name: "etiennet64/gateway-svc"
